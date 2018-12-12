@@ -23,7 +23,10 @@ app.get('/mean', function(req, res, next) {
     let mean = sum / numsArr.length;
 
     let humanReadableResponse = `The mean of ${req.query.nums} is ${mean}.`;
-    writeToFile(humanReadableResponse + '\n');
+
+    if (req.query.save === 'true') {
+      writeToFile(humanReadableResponse + '\n');
+    }
 
     res.send(humanReadableResponse);
   }
@@ -36,7 +39,10 @@ app.get('/median', function(req, res, next) {
     numsArr
   )}.`;
 
-  writeToFile(humanReadableResponse + '\n');
+  if (req.query.save === 'true') {
+    writeToFile(humanReadableResponse + '\n');
+  }
+
   res.send(humanReadableResponse);
 });
 
@@ -54,9 +60,24 @@ app.get('/mode', function(req, res, next) {
   let humanReadableResponse = `The most frequent number of ${
     req.query.nums
   } ${word} ${modeResults}.`;
-  writeToFile(humanReadableResponse + '\n');
+
+  if (req.query.save === 'true') {
+    writeToFile(humanReadableResponse + '\n');
+  }
 
   res.send(humanReadableResponse);
+});
+
+app.delete('/results', function(req, res, next) {
+  fs.unlink(results, function(err) {
+    if (err) {
+      console.log(err);
+      process.exit(1);
+    }
+
+    console.log('File successfully deleted!');
+    res.send('Results file successfully deleted!');
+  });
 });
 
 app.get('/results', function(req, res, next) {
